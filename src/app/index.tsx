@@ -1,14 +1,13 @@
 import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { Platform, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
+import { Link, useRouter } from 'expo-router';
+import { Image } from 'expo-image';
+const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
 function getDevMenuHint() {
   if (Platform.OS === 'web') {
     return <ThemedText type="small">use browser devtools</ThemedText>;
@@ -20,7 +19,7 @@ function getDevMenuHint() {
       </ThemedText>
     );
   }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+  
   return (
     <ThemedText type="small">
       press <ThemedText type="code">{shortcut}</ThemedText>
@@ -29,31 +28,29 @@ function getDevMenuHint() {
 }
 
 export default function HomeScreen() {
+  const router = useRouter();
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
+        <Image
+          source={'https://thumbs.dreamstime.com/b/incredibly-beautiful-sunset-sun-lake-sunrise-landscape-panorama-nature-sky-amazing-colorful-clouds-fantasy-design-115177001.jpg'}
+          style={styles.backImage}
+          contentFit="cover"
+                    
+        />
         <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
+          
           <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
+            Welcome to <ThemedText type="code">Fieldops</ThemedText>
           </ThemedText>
+          <Pressable onPress={() => router.replace('/(auth)/login')} style={styles.stepContainer}>
+          <ThemedText type="title" style={styles.title}>
+            Go to App
+          </ThemedText>
+        </Pressable>
         </ThemedView>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+        
 
         {Platform.OS === 'web' && <WebBadge />}
       </SafeAreaView>
@@ -80,10 +77,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flex: 1,
     paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+    gap: Spacing.five,
+    backgroundColor: 'rgba(125, 100, 140, 0.5)',
+    borderRadius: Spacing.four,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    paddingVertical: Spacing.five,
   },
   title: {
     textAlign: 'center',
+    fontSize: 32,
+    lineHeight: 40,
+    fontWeight: '700',
   },
   code: {
     textTransform: 'uppercase',
@@ -92,7 +97,24 @@ const styles = StyleSheet.create({
     gap: Spacing.three,
     alignSelf: 'stretch',
     paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
+    paddingVertical: Spacing.two,
     borderRadius: Spacing.four,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: '#2E6FA0',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backImage: {
+    width: '200%',
+    height: '200%',
+    resizeMode: 'cover',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: -1,
+    
   },
 });
