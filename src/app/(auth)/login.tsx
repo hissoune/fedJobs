@@ -6,40 +6,62 @@ import {
   Pressable,
   StyleSheet,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedView } from '@/components/themed-view';
 import { Image } from 'expo-image';
+import { AppDispatch } from '@/redux/store';
+import { useDispatch } from 'react-redux';
+import { loginAction } from '@/redux/slices/authSlice';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const dispatch = useDispatch<AppDispatch>();
 
-  function handleLogin() {
+  async function handleLogin() {
     if (!email || !password) {
       Alert.alert('Error', 'Please enter your email and password.');
       return;
     }
 
-    // We'll connect this to SQLite authentication next.
-    console.log({
-      email,
-      password,
-    });
-
-    router.replace('/');
+    try {
+      await dispatch(loginAction({ email, password })).unwrap();
+      router.replace('/(tabs)');
+    } catch {
+      Alert.alert('Error', 'Invalid email or password.');
+    }
   }
 
   return (
-    <ThemedView style={styles.container}>
-        <SafeAreaView style={styles.safeArea}>
-              <Image
-                      source={'https://thumbs.dreamstime.com/b/incredibly-beautiful-sunset-sun-lake-sunrise-landscape-panorama-nature-sky-amazing-colorful-clouds-fantasy-design-115177001.jpg'}
-                      style={styles.backImage}
-                      contentFit="cover"
-                                
-                    />
+    <View style={styles.container}>
+
+      {/* Background */}
+      <Image
+        source={{
+          uri: 'https://images.openai.com/static-rsc-4/X7Ms8v1P7oO8OMG3URYtKLyCND-Tdhw3CQItqvObLTp02gcdmi9IME3S1Uh5JvMFRa1CKTL8jfRevD6uzPwEO30ISa7xPHPNHhRasmIAWFvYjir2Ei90ZunPq91WNCUaegHazxSiF5wnEd-lI5KL6Um9emVxCRLHQ59ZhAnS2jS0uqzkGq5tjbIH4Yu8hujX?purpose=fullsize',
+        }}
+        style={styles.background}
+        contentFit="cover"
+      />
+
+      {/* Dark overlay */}
+      <View style={styles.overlay} />
+
+      <SafeAreaView style={styles.safeArea}>
+        <KeyboardAvoidingView
+          style={styles.keyboard}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
       <ThemedView style={styles.form}>
 
         <Text style={styles.subtitle}>
@@ -82,22 +104,40 @@ export default function LoginScreen() {
           </Text>
         </Pressable>
       </ThemedView>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </SafeAreaView>
-    </ThemedView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#000',
   },
- safeArea: {
+
+  background: {
+    ...StyleSheet.absoluteFill,
+  },
+
+  overlay: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: 'rgba(0, 0, 0, 0.35)',
+  },
+   safeArea: {
     flex: 1,
+  },
+
+  keyboard: {
+    flex: 1,
+  },
+
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
-    alignItems: 'center',
     padding: 24,
-},
+  },
     
   form: {
     width: '100%',
