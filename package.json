@@ -36,8 +36,11 @@
     "react-redux": "^9.3.0"
   },
   "devDependencies": {
+    "@shopify/flash-list": "^2.3.2",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/react": "~19.2.2",
+    "expo-dev-client": "^57.0.18",
+    "install": "^0.13.0",
     "typescript": "~6.0.3"
   },
   "scripts": {

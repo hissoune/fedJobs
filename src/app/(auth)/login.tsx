@@ -10,19 +10,19 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
-import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedView } from '@/components/themed-view';
 import { Image } from 'expo-image';
 import { AppDispatch } from '@/redux/store';
 import { useDispatch } from 'react-redux';
 import { loginAction } from '@/redux/slices/authSlice';
+import { useRouter } from 'expo-router';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch<AppDispatch>();
-
+  const router = useRouter()
   async function handleLogin() {
     if (!email || !password) {
       Alert.alert('Error', 'Please enter your email and password.');
