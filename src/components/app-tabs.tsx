@@ -1,10 +1,16 @@
 import { useColorScheme } from "@/hooks/use-color-scheme.web";
+import { RootState } from "@/redux/store";
+import { Image } from "expo-image";
 import { Tabs } from "expo-router";
 import { View } from "react-native";
 import Svg, { Path } from "react-native-svg";
+import { useSelector } from "react-redux";
 
 export default function AppTabs() {
   const colorScheme = useColorScheme();
+  const {user} = useSelector((state:RootState)=> state.auth)
+  console.log('rere',user);
+  
   return (
     <View style={{ flex: 1, backgroundColor: "transparent" }}>
       <Tabs
@@ -57,33 +63,41 @@ export default function AppTabs() {
             ),
           }}
         />
-        <Tabs.Screen
-          name="explore"
-          options={{
-            title: "Explore",
-            tabBarLabel: "Explore",
-            tabBarLabelStyle: {
-              fontSize: 12,
-              marginBottom: 5,
-              borderRadius: 10,
-              padding: 5,
-              backgroundColor: "#645d5df6",
-              color: "#fff",
-            },
-            headerShown: false,
-            tabBarIcon: ({ color, size }) => (
-              <Svg viewBox="0 0 24 24" fill="none" width={size} height={size}>
-                <Path
-                  d="M12 2a10 10 0 1 0 10 10 8 8 0 1 1-10-10Z"
-                  fill={colorScheme === "dark" ? "#fff" : "#000"}
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </Svg>
-            ),
-          }}
-        />
+      <Tabs.Screen
+  name="explore"
+  options={{
+    title: "Profile",
+    tabBarLabel: "Profile",
+    tabBarLabelStyle: {
+      fontSize: 12,
+      marginBottom: 5,
+      borderRadius: 10,
+      padding: 5,
+      backgroundColor: "#645d5df6",
+      color: "#fff",
+    },
+    headerShown: false,
+  tabBarIcon: () => (
+  <View
+    style={{
+      width: 32,
+      height: 32,
+      borderRadius: 16,
+      overflow: 'hidden',
+    }}
+  >
+    <Image
+      source={{ uri: user?.imageUrl }}
+      style={{
+        width: '100%',
+        height: '100%',
+      }}
+      contentFit="cover"
+    />
+  </View>
+),
+  }}
+/>
         <Tabs.Screen
           name="jobs"
           options={{

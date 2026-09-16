@@ -28,6 +28,8 @@ export const loginAction = createAsyncThunk(
   "auth/loginUser",
   async (credentials: { email: string; password: string }): Promise<{  token: string; refreshToken: string }> => {
     const tokens = await axiosInstance.post("/auth/login", credentials).then((response) => response.data);
+    console.log('ddddddd',tokens);
+    
     await AsyncStorage.setItem("token", tokens.token);
     await AsyncStorage.setItem("refreshToken", tokens.refreshToken);
     return tokens;
@@ -59,6 +61,8 @@ export const profileAction = createAsyncThunk(
         try {
 
         const user = await axiosInstance.get('auth/profile').then((response) => response.data);
+        console.log('usssssssssssssssssssssssss',user);
+        
         return user 
         } catch (error) {
 
@@ -71,8 +75,11 @@ export const profileAction = createAsyncThunk(
  
 export const registerAction = createAsyncThunk(
   "auth/registerUser",
-  async (userData: { name: string; email: string; password: string }): Promise<{ token: string; refreshToken: string }> => {
+  async (userData: FormData ): Promise<{ user:any,token: string; refreshToken: string }> => {
       const tokens = await axiosInstance.post("/auth/register", userData).then((response) => response.data);
+
+      console.log(tokens);
+      
       await saveAuthToken(tokens.token);
       await saveRefreshToken(tokens.refreshToken);
 
@@ -107,6 +114,7 @@ export const authSlice = createSlice({
         .addCase(registerAction.fulfilled, (state, action) => {
             state.isAuthenticated = true;
             state.loading = false
+            state.user = action.payload.user;
             state.token = action.payload.token;
             state.refreshToken = action.payload.refreshToken;
         })

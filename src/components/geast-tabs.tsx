@@ -19,10 +19,11 @@ export default function GeastTabs() {
  const {loading} = useSelector((state:RootState)=> state.auth )
   useEffect(() => {
     const initializeApp = async () => {
-      await dispatch(profileAction());
+      
     
       const token = await getAuthToken();
       if (token) {
+        await dispatch(profileAction());
        router.replace('/(tabs)');
       }else{
         router.replace('/(auth)/login');

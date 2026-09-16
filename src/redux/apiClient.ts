@@ -19,7 +19,6 @@ export function isAxiosError(error: unknown): error is AxiosError<ApiErrorRespon
 const axiosInstance = axios.create({
   baseURL,
   headers: {
-    "Content-Type": "application/json",
     'ngrok-skip-browser-warning': 'true',
   },
 });
@@ -40,11 +39,23 @@ const processQueue = (error: any, token: string | null = null) => {
 axiosInstance.interceptors.request.use(
   async (config) => {
     const token = await getAuthToken();
-
+   
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // console.log("kkkkkkk",config.data);
+    
+
+    // if (config.data.file) {
+    //      config.headers['Content-Type'] ="multipart/form-data"
+    // }else{
+    //   config.headers['Content-Type'] ="application/json"
+    // }
+     
+     
+    //  console.log("fgfgfg",config.headers);
+     
     return config;
   },
   (error: AxiosError) => {
