@@ -56,11 +56,12 @@ export default function GeastTabs() {
     
   }
   return (
-    <Stack>
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)/login" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)/register" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)"options={{headerShown: false}}/>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="(auth)/login" />
+      <Stack.Screen name="(auth)/register" />
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="details/jobDetails" options={{headerShown: true, title: "Job Details"}} />
     </Stack>
   );
 

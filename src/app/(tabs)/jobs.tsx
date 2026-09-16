@@ -34,8 +34,19 @@ type Job = {
 };
 
 function JobCard({ job }: { job: Job }) {
+  const router = useRouter()
   return (
-    <Pressable style={styles.jobCard}>
+    <Pressable
+      onPress={() =>
+        router.push({
+          pathname: '/details/jobDetails',
+          params: {
+            id: job.id,
+          },
+        })
+      }
+      style={styles.jobCard}
+    >
       <View style={styles.jobTop}>
         <View style={styles.priorityBadge}>
           <View

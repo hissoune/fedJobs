@@ -29,10 +29,12 @@ export type Job = {
   description: string;
   status: JobStatus;
   priority: JobPriority;
-
+  customer:User
   notes: string[];
   photos: string[];
-
+  applications:any[]
   customerId: string;
   technicianId: string | null;
+  createdAt : Date
+  updatedAt : Date
 };

@@ -26,7 +26,7 @@ import { clearAuthToken, clearRefreshToken, saveAuthToken, saveRefreshToken } fr
 
 export const loginAction = createAsyncThunk(
   "auth/loginUser",
-  async (credentials: { email: string; password: string }): Promise<{  token: string; refreshToken: string }> => {
+  async (credentials: { email: string; password: string }): Promise<{ userWithUrl:any, token: string; refreshToken: string }> => {
     const tokens = await axiosInstance.post("/auth/login", credentials).then((response) => response.data);
     console.log('ddddddd',tokens);
     
@@ -102,6 +102,7 @@ export const authSlice = createSlice({
             state.loading = false
             state.token = action.payload.token;
             state.refreshToken = action.payload.refreshToken;
+            state.user = action.payload.userWithUrl
         })
         .addCase(loginAction.rejected, (state) => {
             state.isAuthenticated = false;

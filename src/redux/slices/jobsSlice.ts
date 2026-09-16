@@ -6,6 +6,7 @@ interface InitialState {
   jobs: Job[];
   loading: boolean;
   loadingMore: boolean;
+  job:Job | null 
   err: string;
   hasMore: boolean;
   totalPages: number;
@@ -15,6 +16,7 @@ const initialState: InitialState = {
   jobs: [],
   loading: false,
   loadingMore: false,
+  job:null,
   err: "",
   hasMore: true,
   totalPages: 0,
@@ -43,7 +45,6 @@ export const getJobsAction = createAsyncThunk(
 export const loadMoreJobsAction = createAsyncThunk(
   "jobs/loadMore",
   async ({ page, filters }: { page: number; filters: any }, { rejectWithValue }) => {
-    console.log("pppppppppp", filters);
 
     try {
       const startedAt = Date.now();
@@ -66,6 +67,13 @@ export const loadMoreJobsAction = createAsyncThunk(
     }
   }
 );
+
+export const getJobAction = createAsyncThunk(
+   "jobs/getOne",
+   async (id:string)=>{
+     return await axiosInstance.get(`jobs/${id}`).then((result)=> result.data)
+   }
+)
 
 const jobsSlice = createSlice({
   name: "jobsSlice",
@@ -102,6 +110,17 @@ const jobsSlice = createSlice({
     .addCase(loadMoreJobsAction.rejected, (state) => {
           state.loadingMore = false;
           state.err = "Failed loading more jobs";
+      })
+      .addCase(getJobAction.pending, (state) => {
+          state.loading = true;
+      })
+     .addCase(getJobAction.fulfilled, (state, action) => {
+          state.loading = false;
+          state.job = action.payload
+        })
+    .addCase(getJobAction.rejected, (state) => {
+          state.loading = false;
+          state.err = "Failed loadingthis job ";
       });
   },
 });
