@@ -29,6 +29,7 @@ export type Job = {
   description: string;
   status: JobStatus;
   priority: JobPriority;
+  price:string
   customer:User
   notes: string[];
   photos: string[];

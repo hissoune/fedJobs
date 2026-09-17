@@ -172,6 +172,10 @@ export default function JobDetails() {
             label="Status"
             value={status.label}
           />
+          <InfoRow
+            label="price"
+            value={`${job.price}$`}
+          />
 
           <InfoRow
             label="Created"
@@ -190,11 +194,24 @@ export default function JobDetails() {
         <Text style={styles.sectionTitle}>Customer</Text>
 
         <View style={styles.personRow}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {job.customer?.name?.charAt(0)?.toUpperCase() ?? '?'}
-            </Text>
-          </View>
+           <View
+               style={{
+                 width: 40,
+                 height: 40,
+                 borderRadius: 32,
+                 overflow: 'hidden',
+                 margin:10 
+               }}
+             >
+               <Image
+                 source={{ uri: job.customer?.imageUrl }}
+                 style={{
+                   width: '100%',
+                   height: '100%',
+                 }}
+                 resizeMode="cover"
+               />
+             </View>
 
           <View style={styles.personInfo}>
             <Text style={styles.personName}>
@@ -473,7 +490,6 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#dbeafe',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -566,11 +582,26 @@ const styles = StyleSheet.create({
   applyButton: {
     height: 56,
     borderRadius: 16,
-    backgroundColor: '#2563eb',
+    backgroundColor: '#111',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 20,
+  },
+    button: {
+    height: 52,
+    borderRadius: 10,
+    backgroundColor: '#111',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 8,
+    marginBottom: 24,
+  },
+
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 
   applyText: {
