@@ -29,9 +29,10 @@ export const loginAction = createAsyncThunk(
   async (credentials: { email: string; password: string }): Promise<{ userWithUrl:any, token: string; refreshToken: string }> => {
     const tokens = await axiosInstance.post("/auth/login", credentials).then((response) => response.data);
     console.log('ddddddd',tokens);
+    console.log("tttttttttttttttt",tokens.refreshToken);
     
     await AsyncStorage.setItem("token", tokens.token);
-    await AsyncStorage.setItem("refreshToken", tokens.refreshToken);
+    await saveRefreshToken(tokens.refreshToken)
     return tokens;
   }
 );
@@ -58,17 +59,13 @@ export const profileAction = createAsyncThunk(
     "auth/profile",
     async () =>{
         
-        try {
+      
 
         const user = await axiosInstance.get('auth/profile').then((response) => response.data);
         console.log('usssssssssssssssssssssssss',user);
         
         return user 
-        } catch (error) {
-
-         await clearAuthToken()
-         await clearRefreshToken()
-        }
+       
 
     }
 )

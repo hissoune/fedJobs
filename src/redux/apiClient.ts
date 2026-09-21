@@ -57,12 +57,18 @@ axiosInstance.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
     const status = error.response?.status;
+      console.log("ax err ",status);
       console.log("ax err ",error);
+      console.log("ax err ",originalRequest._retry);
       
     if (status === 401 && !originalRequest._retry) {
+      console.log("u r here ifffffff");
+      
       originalRequest._retry = true;
 
       if (isRefreshing) {
+        console.log("okay u r here ");
+        
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         }).then(token => {
@@ -74,6 +80,8 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       const refreshToken = await getRefreshToken();
+      console.log("fhfjhfjhfjhfj",refreshToken);
+      
       if (!refreshToken) {
         await clearAuthToken();
         await clearRefreshToken();
@@ -81,25 +89,37 @@ axiosInstance.interceptors.response.use(
       }
 
       try {
-        const response = await axios.post(`${baseURL}/auth/refresh`, { refreshToken });
-           console.log('refresh response',response.data);
-        const { accessToken, refreshToken: newRefreshToken } = response.data;
+  console.log('🔥 BEFORE REFRESH REQUEST');
 
-        await saveAuthToken(accessToken);
-        await saveRefreshToken(newRefreshToken);
+  const response = await axios.post(
+    `${baseURL}/auth/refresh`,
+    { refreshToken }
+  );
 
-        processQueue(null, accessToken);
+  console.log('🔥 AFTER REFRESH REQUEST');
+  console.log('🔥 STATUS:', response.status);
+  console.log('🔥 DATA:', response.data);
 
-        originalRequest.headers = { ...originalRequest.headers, Authorization: `Bearer ${accessToken}` };
-        return axiosInstance(originalRequest);
-      } catch (err) {
-        processQueue(err, null);
-         await clearAuthToken();
-        await clearRefreshToken();
-        return Promise.reject(err);
-      } finally {
-        isRefreshing = false;
-      }
+ await saveAuthToken(response.data.accessToken)
+ await saveRefreshToken(response.data.refreshToken)
+    originalRequest.headers = {
+      ...originalRequest.headers,
+      Authorization: `Bearer ${response.data.accessToken}`,
+    };
+
+return axiosInstance(originalRequest);
+} catch (err) {
+  console.log('🔥🔥 REFRESH FAILED:', err);
+  console.log('🔥🔥 RESPONSE:', (err as AxiosError).response?.data);
+  console.log('🔥🔥 STATUS:', (err as AxiosError).response?.status);
+
+  processQueue(err, null);
+
+  await clearAuthToken();
+  await clearRefreshToken();
+
+  return Promise.reject(err);
+}
     }
      if (!error.response) {
       console.error("Server is unreachable");

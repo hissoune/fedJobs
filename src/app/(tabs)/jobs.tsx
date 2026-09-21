@@ -15,23 +15,8 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
-import { JobPriority } from '@/types';
+import { Job, JobPriority } from '@/types';
 import FilterPriority from '@/components/filtePriority';
-
-
-type JobStatus = 'PENDING' | 'PROCESING' | 'COMPLEETED' | 'FAILED';
-
-type Job = {
-  id: string;
-  title: string;
-  description: string;
-  status: JobStatus;
-  priority: JobPriority;
-  notes: string[];
-  photos: string[];
-  customerId: string;
-  technicianId: string | null;
-};
 
 function JobCard({ job }: { job: Job }) {
   const router = useRouter()
@@ -209,7 +194,7 @@ const loadingmoreTimeOut = async ()=>{
         keyExtractor={(item) => item.id}
         refreshControl={
           <RefreshControl
-            tintColor={'blue'}
+            tintColor={'#12544F'}
             refreshing={refreshing}
             onRefresh={refreshJobs}
           />
