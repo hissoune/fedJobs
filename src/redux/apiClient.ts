@@ -43,18 +43,6 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-
-    // console.log("kkkkkkk",config.data);
-    
-
-    // if (config.data.file) {
-    //      config.headers['Content-Type'] ="multipart/form-data"
-    // }else{
-    //   config.headers['Content-Type'] ="application/json"
-    // }
-     
-     
-    //  console.log("fgfgfg",config.headers);
      
     return config;
   },
@@ -69,7 +57,8 @@ axiosInstance.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
     const status = error.response?.status;
-
+      console.log("ax err ",error);
+      
     if (status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 

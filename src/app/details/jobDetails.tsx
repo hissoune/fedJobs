@@ -243,13 +243,13 @@ export default function JobDetails() {
         </View>
       )}
 
-      {job.photos?.length > 0 && (
+      {job.problemphotos?.length > 0 && (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Photos</Text>
 
             <Text style={styles.count}>
-              {job.photos.length}
+              {job.problemphotos.length}
             </Text>
           </View>
 
@@ -258,7 +258,7 @@ export default function JobDetails() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.photos}
           >
-            {job.photos.map((photo, index) => (
+            {job.problemphotos.map((photo, index) => (
               <Image
                 key={index}
                 source={{ uri: photo }}

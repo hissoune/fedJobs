@@ -32,7 +32,7 @@ export type Job = {
   price:string
   customer:User
   notes: string[];
-  photos: string[];
+  problemphotos: string[];
   applications:any[]
   customerId: string;
   technicianId: string | null;
