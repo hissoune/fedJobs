@@ -58,14 +58,9 @@ export const logoutAction  = createAsyncThunk(
 export const profileAction = createAsyncThunk(
     "auth/profile",
     async () =>{
-        
-      
 
-        const user = await axiosInstance.get('auth/profile').then((response) => response.data);
-        console.log('usssssssssssssssssssssssss',user);
-        
-        return user 
-       
+           const user = await axiosInstance.get('auth/profile').then((response) => response.data);        
+           return user 
 
     }
 )
@@ -81,6 +76,15 @@ export const registerAction = createAsyncThunk(
       await saveRefreshToken(tokens.refreshToken);
 
       return tokens;
+  }
+);
+export const update = createAsyncThunk(
+  "auth/update",
+  async (userData: FormData ): Promise<User> => {
+      const user = await axiosInstance.patch("/auth/update", userData).then((response) => response.data);
+      console.log("gfgfgfgfgf",user);
+      
+      return user;
   }
 );
 
@@ -137,12 +141,23 @@ export const authSlice = createSlice({
             state.loading = true
         })
         .addCase(profileAction.fulfilled, (state, action) => {
-            state.isAuthenticated = false;
+            state.isAuthenticated = true;
             state.user = action.payload
             state.loading = false
         })
         .addCase(profileAction.rejected, (state) => {
             state.isAuthenticated = false;
+            state.loading = false
+        })
+        .addCase(update.pending, (state) => {
+            state.loading = true
+        })
+        .addCase(update.fulfilled, (state, action) => {
+            state.loading = false
+            state.user = action.payload
+            
+        })
+        .addCase(update.rejected, (state) => {
             state.loading = false
         })
        

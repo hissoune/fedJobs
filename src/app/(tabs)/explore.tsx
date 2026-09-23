@@ -6,47 +6,52 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  TextInput,
   View,
 } from "react-native";
-import * as ImagePicker from 'expo-image-picker';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
 import { ThemedText } from "@/components/themed-text";
-import { ThemedView } from "@/components/themed-view";
 import { logoutAction } from "@/redux/slices/authSlice";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useDispatch, useSelector } from "react-redux";
+import { useUpdate } from "@/hooks/auth/useUpdate";
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
-  const { user, loading } = useSelector((state: RootState) => state.auth);
-  const handleChangeImage = async ()=> {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
-  
-      if (!result.canceled) {
-        const uri = result.assets[0].uri;
-  
-      
-      }
-    };
+
+
+  const {
+    userToUpdate,
+    loading,
+    oldPassword,
+    isEditing,
+    setIsEditing,
+    setName,
+    setEmail,
+    setPassword,
+    setAge,
+    setOldPassword,
+    handleSubmit,
+    pickImage,
+    reset,
+  } = useUpdate();
+
   const handleLogout = async () => {
     try {
       await dispatch(logoutAction()).unwrap();
       router.replace("/(auth)/login");
-    } catch (error) {
-      Alert.alert("Logout failed", "Something went wrong. Please try again.");
+    } catch {
+      Alert.alert(
+        "Logout failed",
+        "Something went wrong. Please try again."
+      );
     }
   };
 
-  if (!user) {
+  if (!userToUpdate) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#2563eb" />
@@ -54,9 +59,26 @@ export default function ProfileScreen() {
     );
   }
 
-  const avatarSource = user.imageUrl
-    ? { uri: user.imageUrl }
+  const avatarSource = userToUpdate.imageUrl
+    ? { uri: userToUpdate.imageUrl }
     : require("@/assets/images/avatar.png");
+
+  const handleCancel = () => {
+    reset();
+    setIsEditing(false);
+  };
+
+  const handleSave = async () => {
+    try {
+      await handleSubmit();
+      setIsEditing(false);
+    } catch (error) {
+      Alert.alert(
+        "Update failed",
+        "Something went wrong while updating your profile."
+      );
+    }
+  };
 
   return (
     <ScrollView
@@ -75,6 +97,20 @@ export default function ProfileScreen() {
         <ThemedText type="title" style={styles.headerTitle}>
           Profile
         </ThemedText>
+
+        {isEditing ? (
+          <Pressable
+            onPress={handleCancel}
+            style={({ pressed }) => [
+              styles.cancelButton,
+              pressed && styles.pressed,
+            ]}
+          >
+            <ThemedText style={styles.cancelText}>
+              Cancel
+            </ThemedText>
+          </Pressable>
+        ) : null}
       </View>
 
       {/* Profile identity */}
@@ -87,81 +123,236 @@ export default function ProfileScreen() {
           />
 
           <Pressable
-            style={styles.cameraButton}
-             onPress={() => handleChangeImage()}
+            style={({ pressed }) => [
+              styles.cameraButton,
+              pressed && styles.pressed,
+            ]}
+            onPress={pickImage}
           >
-            <ThemedText style={styles.cameraIcon}>+</ThemedText>
+            <ThemedText style={styles.cameraIcon}>
+              +
+            </ThemedText>
           </Pressable>
         </View>
 
         <ThemedText type="title" style={styles.name}>
-          {user.name}
+          {userToUpdate.name}
         </ThemedText>
 
-        <ThemedText themeColor="textSecondary" style={styles.email}>
-          {user.email}
+        <ThemedText
+          themeColor="textSecondary"
+          style={styles.email}
+        >
+          {userToUpdate.email}
         </ThemedText>
       </View>
 
-      {/* Personal information */}
-      <ThemedView style={styles.section}>
-        <ThemedText style={styles.sectionTitle}>
-          Personal information
-        </ThemedText>
+      {isEditing ? (
+        <>
+          {/* Edit information */}
+          <View style={styles.section}>
+            <ThemedText style={styles.sectionTitle}>
+              Personal information
+            </ThemedText>
 
-        <View style={styles.infoContainer}>
-          <InfoRow label="Full name" value={user.name} />
+            <View style={styles.formContainer}>
+              <InputField
+                label="Full name"
+                value={userToUpdate.name || ""}
+                onChangeText={setName}
+                placeholder="Your name"
+              />
 
-          <InfoRow label="Age" value={`${user.age} years`} />
+              <InputField
+                label="Email"
+                value={userToUpdate.email || ""}
+                onChangeText={setEmail}
+                placeholder="Your email"
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
 
-          <InfoRow label="Email" value={user.email} last />
-        </View>
-      </ThemedView>
+              <InputField
+                label="Age"
+                value={String(userToUpdate.age)}
+                onChangeText={(value) =>
+                  setAge(Number(value))
+                }
+                placeholder="Your age"
+                keyboardType="numeric"
+                last
+              />
+            </View>
+          </View>
 
-      {/* Account */}
-      <View style={styles.section}>
-        <ThemedText style={styles.sectionTitle}>Account</ThemedText>
+          {/* Password */}
+          <View style={styles.section}>
+            <ThemedText style={styles.sectionTitle}>
+              Change password
+            </ThemedText>
 
-        <View style={styles.menuContainer}>
-          <MenuItem
-            title="Edit profile"
-            subtitle="Update your personal information"
-            onPress={() => {}}
-          />
+            <View style={styles.formContainer}>
+              <InputField
+                label="Current password"
+                value={oldPassword}
+                onChangeText={setOldPassword}
+                placeholder="Enter current password"
+                secureTextEntry
+              />
 
-          <MenuItem
-            title="Notifications"
-            subtitle="Manage your notifications"
-            onPress={() => {}}
-          />
+              <InputField
+                label="New password"
+                value={userToUpdate.password || ''}
+                onChangeText={setPassword}
+                placeholder="Enter new password"
+                secureTextEntry
+                last
+              />
+            </View>
+          </View>
 
-          <MenuItem
-            title="Privacy"
-            subtitle="Manage your privacy settings"
-            onPress={() => {}}
-            last
-          />
-        </View>
-      </View>
+          {/* Save */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.saveButton,
+              pressed && styles.pressed,
+            ]}
+            onPress={handleSave}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#ffffff" />
+            ) : (
+              <ThemedText style={styles.saveText}>
+                Save changes
+              </ThemedText>
+            )}
+          </Pressable>
+        </>
+      ) : (
+        <>
+          {/* Personal information */}
+          <View style={styles.section}>
+            <ThemedText style={styles.sectionTitle}>
+              Personal information
+            </ThemedText>
 
-      {/* Logout */}
-      <Pressable
-        style={({ pressed }) => [
-          styles.logoutButton,
-          pressed && styles.pressed,
-        ]}
-        onPress={handleLogout}
-        disabled={loading}
-      >
-        {loading ? (
-          <ActivityIndicator color="#dc2626" />
-        ) : (
-          <ThemedText style={styles.logoutText}>Log out</ThemedText>
-        )}
-      </Pressable>
+            <View style={styles.infoContainer}>
+              <InfoRow
+                label="Full name"
+                value={userToUpdate.name || ""}
+              />
 
-      <ThemedText style={styles.version}>FedOps</ThemedText>
+              <InfoRow
+                label="Age"
+                value={`${userToUpdate.age} years`}
+              />
+
+              <InfoRow
+                label="Email"
+                value={userToUpdate.email || ""}
+                last
+              />
+            </View>
+          </View>
+
+          {/* Account */}
+          <View style={styles.section}>
+            <ThemedText style={styles.sectionTitle}>
+              Account
+            </ThemedText>
+
+            <View style={styles.menuContainer}>
+              <MenuItem
+                title="Edit profile"
+                subtitle="Update your personal information"
+                onPress={()=>setIsEditing(true)}
+              />
+
+              <MenuItem
+                title="Notifications"
+                subtitle="Manage your notifications"
+                onPress={() => {}}
+              />
+
+              <MenuItem
+                title="Privacy"
+                subtitle="Manage your privacy settings"
+                onPress={() => {}}
+                last
+              />
+            </View>
+          </View>
+
+          {/* Logout */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.logoutButton,
+              pressed && styles.pressed,
+            ]}
+            onPress={handleLogout}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#dc2626" />
+            ) : (
+              <ThemedText style={styles.logoutText}>
+                Log out
+              </ThemedText>
+            )}
+          </Pressable>
+        </>
+      )}
+
+      <ThemedText style={styles.version}>
+        FedOps
+      </ThemedText>
     </ScrollView>
+  );
+}
+
+/* -------------------------------- */
+/* Input                            */
+/* -------------------------------- */
+
+function InputField({
+  label,
+  value,
+  onChangeText,
+  placeholder,
+  last = false,
+  ...props
+}: {
+  label: string;
+  value: string;
+  onChangeText: (value: string) => void;
+  placeholder?: string;
+  last?: boolean;
+  [key: string]: any;
+}) {
+  return (
+    <View
+      style={[
+        styles.inputRow,
+        !last && styles.inputRowBorder,
+      ]}
+    >
+      <ThemedText
+        themeColor="textSecondary"
+        style={styles.inputLabel}
+      >
+        {label}
+      </ThemedText>
+
+      <TextInput
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor="#94a3b8"
+        style={styles.input}
+        {...props}
+      />
+    </View>
   );
 }
 
@@ -179,18 +370,28 @@ function InfoRow({
   last?: boolean;
 }) {
   return (
-    <View style={[styles.infoRow, !last && styles.infoRowBorder]}>
-      <ThemedText themeColor="textSecondary" style={styles.infoLabel}>
+    <View
+      style={[
+        styles.infoRow,
+        !last && styles.infoRowBorder,
+      ]}
+    >
+      <ThemedText
+        themeColor="textSecondary"
+        style={styles.infoLabel}
+      >
         {label}
       </ThemedText>
 
-      <ThemedText style={styles.infoValue}>{value}</ThemedText>
+      <ThemedText style={styles.infoValue}>
+        {value}
+      </ThemedText>
     </View>
   );
 }
 
 /* -------------------------------- */
-/* Menu item                       */
+/* Menu item                        */
 /* -------------------------------- */
 
 function MenuItem({
@@ -214,14 +415,21 @@ function MenuItem({
       onPress={onPress}
     >
       <View style={styles.menuText}>
-        <ThemedText style={styles.menuTitle}>{title}</ThemedText>
+        <ThemedText style={styles.menuTitle}>
+          {title}
+        </ThemedText>
 
-        <ThemedText themeColor="textSecondary" style={styles.menuSubtitle}>
+        <ThemedText
+          themeColor="textSecondary"
+          style={styles.menuSubtitle}
+        >
           {subtitle}
         </ThemedText>
       </View>
 
-      <ThemedText style={styles.chevron}>›</ThemedText>
+      <ThemedText style={styles.chevron}>
+        ›
+      </ThemedText>
     </Pressable>
   );
 }
@@ -243,12 +451,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#f8fafc",
   },
 
   /* Header */
 
   header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 30,
   },
 
@@ -256,6 +466,19 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "800",
     letterSpacing: -0.5,
+  },
+
+  cancelButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: "#f1f5f9",
+  },
+
+  cancelText: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#475569",
   },
 
   /* Identity */
@@ -281,9 +504,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: -2,
     bottom: 2,
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     backgroundColor: "#2563eb",
     borderWidth: 3,
     borderColor: "#f8fafc",
@@ -293,8 +516,8 @@ const styles = StyleSheet.create({
 
   cameraIcon: {
     color: "#ffffff",
-    fontSize: 20,
-    lineHeight: 20,
+    fontSize: 21,
+    lineHeight: 21,
     fontWeight: "600",
   },
 
@@ -318,10 +541,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "800",
     marginBottom: 10,
-    color: "#334155",
   },
 
-  /* Personal info */
+  /* Information */
 
   infoContainer: {
     backgroundColor: "#325E6A",
@@ -338,7 +560,7 @@ const styles = StyleSheet.create({
 
   infoRowBorder: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#e2e8f0",
+    borderBottomColor: "#ffffff30",
   },
 
   infoLabel: {
@@ -352,7 +574,40 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
 
-  /* Account menu */
+  /* Form */
+
+  formContainer: {
+    backgroundColor: "#325E6A",
+    borderRadius: 25,
+    paddingHorizontal: 16,
+  },
+
+  inputRow: {
+    minHeight: 68,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+
+  inputRowBorder: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "#ffffff30",
+  },
+
+  inputLabel: {
+    width: 100,
+    fontSize: 14,
+  },
+
+  input: {
+    flex: 1,
+    color: "#ffffff",
+    fontSize: 14,
+    textAlign: "right",
+    paddingVertical: 8,
+  },
+
+  /* Menu */
 
   menuContainer: {
     backgroundColor: "#325E6A",
@@ -370,7 +625,7 @@ const styles = StyleSheet.create({
 
   menuItemBorder: {
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#e2e8f0",
+    borderBottomColor: "#ffffff30",
   },
 
   menuPressed: {
@@ -397,6 +652,23 @@ const styles = StyleSheet.create({
     lineHeight: 28,
     color: "#94a3b8",
     fontWeight: "300",
+  },
+
+  /* Save */
+
+  saveButton: {
+    height: 54,
+    borderRadius: 15,
+    backgroundColor: "#2563eb",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
+
+  saveText: {
+    color: "#ffffff",
+    fontSize: 15,
+    fontWeight: "800",
   },
 
   /* Logout */

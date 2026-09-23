@@ -38,23 +38,21 @@ export default function GeastTabs() {
     initializeApp();
   }, []);
 
-      console.log(loading);
 
+  // if (loading) {
+  //   return (
+  //   <View style={styles.loadingContainer}>
+  //     <Animated.View style={styles.loader}>
+  //       <Text style={styles.loaderText}>F</Text>
+  //     </Animated.View>
 
-  if (loading) {
-    return (
-    <View style={styles.loadingContainer}>
-      <Animated.View style={styles.loader}>
-        <Text style={styles.loaderText}>F</Text>
-      </Animated.View>
-
-      <Text style={styles.loadingText}>
-        Loading...
-      </Text>
-    </View>
-  );
+  //     <Text style={styles.loadingText}>
+  //       Loading...
+  //     </Text>
+  //   </View>
+  // );
     
-  }
+  // }
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="index" />

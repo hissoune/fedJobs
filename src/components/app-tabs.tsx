@@ -28,10 +28,10 @@ export default function AppTabs() {
             marginHorizontal: 20,
             shadowColor: "#000",
             shadowOffset: {
-              width: 0,
+              width: 6,
               height: 2,
             },
-            shadowOpacity: 0.25,
+            shadowOpacity: 0.50,
             shadowRadius: 3.84,
           },
         }}
@@ -64,45 +64,82 @@ export default function AppTabs() {
           }}
         />
       <Tabs.Screen
-  name="explore"
-  options={{
-    title: "Profile",
-    tabBarLabel: "Profile",
-    tabBarLabelStyle: {
-      fontSize: 12,
-      marginBottom: 5,
-      borderRadius: 10,
-      padding: 5,
-      backgroundColor: "#645d5df6",
-      color: "#fff",
-    },
-    headerShown: false,
-  tabBarIcon: () => (
-  <View
-    style={{
-      width: 32,
-      height: 32,
-      borderRadius: 16,
-      overflow: 'hidden',
-    }}
-  >
-    <Image
-      source={{ uri: user?.imageUrl }}
-      style={{
-        width: '100%',
-        height: '100%',
-      }}
-      contentFit="cover"
-    />
-  </View>
-),
-  }}
-/>
+          name="explore"
+          options={{
+            title: "Profile",
+            tabBarLabel: "Profile",
+            tabBarLabelStyle: {
+              fontSize: 12,
+              marginBottom: 5,
+              borderRadius: 10,
+              padding: 5,
+              backgroundColor: "#645d5df6",
+              color: "#fff",
+            },
+            headerShown: false,
+          tabBarIcon: () => (
+          <View
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 16,
+              overflow: 'hidden',
+            }}
+          >
+            <Image
+              source={{ uri: user?.imageUrl }}
+              style={{
+                width: '100%',
+                height: '100%',
+              }}
+              contentFit="cover"
+            />
+          </View>
+        ),
+          }}
+        />
+       
         <Tabs.Screen
           name="jobs"
           options={{
             title: "Jobs",
             tabBarLabel: "Jobs",
+            tabBarLabelStyle: {
+              fontSize: 12,
+              marginBottom: 5,
+              borderRadius: 10,
+              padding: 5,
+              backgroundColor: "#645d5df6",
+              color: "#fff",
+            },
+            headerShown: false,
+            tabBarIcon: ({ color, size }) => (
+              <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+                <Path
+                  d="M9 6V5C9 3.895 9.895 3 11 3H13C14.105 3 15 3.895 15 5V6M4 8H20C21.105 8 22 8.895 22 10V18C22 19.105 21.105 20 20 20H4C2.895 20 2 19.105 2 18V10C2 8.895 2.895 8 4 8Z"
+                  stroke={color}
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+
+                <Path
+                  d="M2 12H22M10 12V14H14V12"
+                  stroke={color}
+                  strokeWidth={2}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </Svg>
+            ),
+          }}
+        />
+
+         <Tabs.Screen
+          name="applications"
+          options={{
+            title: "Applications",
+            tabBarLabel: "Applications",
             tabBarLabelStyle: {
               fontSize: 12,
               marginBottom: 5,
