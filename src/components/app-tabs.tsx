@@ -135,7 +135,7 @@ export default function AppTabs() {
           }}
         />
 
-         <Tabs.Screen
+         {/* <Tabs.Screen
           name="applications"
           options={{
             title: "Applications",
@@ -169,7 +169,7 @@ export default function AppTabs() {
               </Svg>
             ),
           }}
-        />
+        /> */}
       </Tabs>
     </View>
   );
