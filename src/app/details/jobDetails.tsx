@@ -1,9 +1,12 @@
-import { getJobAction } from '@/redux/slices/jobsSlice';
+import ApplyModal from '@/components/applyModel';
+import { showErrorMessage, showSuccessMessage } from '@/components/flashMessages';
+import { ApplyAction, getJobAction } from '@/redux/slices/jobsSlice';
 import { AppDispatch, RootState } from '@/redux/store';
 import { useLocalSearchParams } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
@@ -15,13 +18,15 @@ import { useDispatch, useSelector } from 'react-redux';
 
 export default function JobDetails() {
   const { id } = useLocalSearchParams<{ id: string }>();
+  const [applyVisible, setApplyVisible] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
 
-  const { job, loading } = useSelector(
+  const { job, loading,err } = useSelector(
     (state: RootState) => state.jobs
   );
 
+  
   useEffect(() => {
     if (id) {
       dispatch(getJobAction(id));
@@ -46,6 +51,34 @@ export default function JobDetails() {
       </View>
     );
   }
+
+   const handleApply = async (message: string) => {
+  try {
+    await dispatch(
+      ApplyAction({
+        jobId: job.id,
+        message,
+      })
+    ).unwrap();
+
+    // Only close when application succeeded
+
+    showSuccessMessage('Operation completed successfully!')
+
+  } catch (error) {
+    console.log('APPLY ERROR:', error);
+     
+      showErrorMessage(err)
+
+  } finally {
+    setApplyVisible(false);
+
+  }
+};
+      
+
+  
+  
 
   const priority = {
     URGENT: {
@@ -295,6 +328,7 @@ export default function JobDetails() {
         <TouchableOpacity
           style={styles.applyButton}
           activeOpacity={0.85}
+          onPress={() => setApplyVisible(true)}
         >
           <Text style={styles.applyText}>
             Apply for this job
@@ -303,6 +337,14 @@ export default function JobDetails() {
           <Text style={styles.arrow}>→</Text>
         </TouchableOpacity>
       )}
+
+      <ApplyModal
+        visible={applyVisible}
+        jobId={job.id}
+        onClose={() => setApplyVisible(false)}
+        onSubmit={(message)=>handleApply(message)}
+        
+/>
     </ScrollView>
   );
 }

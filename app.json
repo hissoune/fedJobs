@@ -4,7 +4,7 @@
     "slug": "expo-test",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/fedops.png",
     "scheme": "expotest",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -29,8 +29,8 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
-          "image": "./assets/images/splash-icon.png",
+          "backgroundColor": "transparent",
+          "image": "./assets/images/fedops.png",
           "imageWidth": 76
         }
       ],

@@ -161,8 +161,8 @@ const loadingmoreTimeOut = async ()=>{
           <Text style={styles.greeting}>Good morning</Text>
         </View>
 
-        <Pressable style={styles.avatar}>
-          <Text style={styles.avatarText}>K</Text>
+        <Pressable onPress={()=>router.push('/details/applications')} style={styles.avatar}>
+          <Text style={styles.avatarText}>My Applications</Text>
         </Pressable>
       </View>
 
@@ -259,9 +259,8 @@ const styles = StyleSheet.create({
   },
 
   avatar: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
+    padding:4,
+    borderRadius: 10,
     backgroundColor: '#111',
     alignItems: 'center',
     justifyContent: 'center',

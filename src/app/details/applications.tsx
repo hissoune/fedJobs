@@ -6,36 +6,46 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { useEffect } from "react";
 
-const applications = [
-  {
-    id: "1",
-    job: "AC Installation & Maintenance",
-    location: "Safi",
-    status: "PENDING",
-    date: "Today",
-  },
-  {
-    id: "2",
-    job: "Electrical System Repair",
-    location: "Safi",
-    status: "APPROVED",
-    date: "Sep 20",
-  },
-  {
-    id: "3",
-    job: "Solar Panel Maintenance",
-    location: "Safi",
-    status: "DECLINED",
-    date: "Sep 18",
-  },
-];
+// const applications = [
+//   {
+//     id: "1",
+//     job: "AC Installation & Maintenance",
+//     location: "Safi",
+//     status: "PENDING",
+//     date: "Today",
+//   },
+//   {
+//     id: "2",
+//     job: "Electrical System Repair",
+//     location: "Safi",
+//     status: "APPROVED",
+//     date: "Sep 20",
+//   },
+//   {
+//     id: "3",
+//     job: "Solar Panel Maintenance",
+//     location: "Safi",
+//     status: "DECLINED",
+//     date: "Sep 18",
+//   },
+// ];
 
 type ApplicationStatus = "PENDING" | "APPROVED" | "DECLINED";
 
 export default function Applications() {
   const insets = useSafeAreaInsets();
 
+  const {applications,loading} = useSelector((state:RootState)=> state.applications)
+  
+  useEffect(()=>{
+
+  },[])
+
+  if(loading) return
   return (
     <ScrollView
       style={styles.container}
@@ -89,7 +99,7 @@ export default function Applications() {
       </View>
 
       {/* Applications */}
-      <View style={styles.list}>
+      {/* <View style={styles.list}>
         {applications.map((application) => (
           <ApplicationItem
             key={application.id}
@@ -99,7 +109,7 @@ export default function Applications() {
             date={application.date}
           />
         ))}
-      </View>
+      </View> */}
     </ScrollView>
   );
 }

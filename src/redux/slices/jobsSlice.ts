@@ -1,6 +1,7 @@
 import { Job } from "@/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../apiClient";
+import Toast from 'react-native-toast-message';
 
 interface InitialState {
   jobs: Job[];
@@ -73,7 +74,26 @@ export const getJobAction = createAsyncThunk(
    async (id:string)=>{
      return await axiosInstance.get(`jobs/${id}`).then((result)=> result.data)
    }
+);
+
+export const ApplyAction = createAsyncThunk(
+    "applications/apply",
+  async (
+    { jobId, message }: { jobId: string; message: string },
+    { rejectWithValue }
+  ) => {
+    
+    try {
+      const result = await axiosInstance.post("jobs/apply", { jobId, message });
+      return result.data;
+    } catch (err: any) {
+      return rejectWithValue(
+       err.response.data.message ||  "Failed applying for job"
+      );
+    }
+    }
 )
+
 
 const jobsSlice = createSlice({
   name: "jobsSlice",
@@ -121,7 +141,19 @@ const jobsSlice = createSlice({
     .addCase(getJobAction.rejected, (state) => {
           state.loading = false;
           state.err = "Failed loadingthis job ";
-      });
+      })
+      .addCase(ApplyAction.pending, (state) => {
+          state.loading = true;
+      })
+     .addCase(ApplyAction.fulfilled, (state, action) => {
+          state.loading = false;
+          state.job = action.payload
+        })
+    .addCase(ApplyAction.rejected, (state,action) => {
+          state.loading = false;          
+          state.err = action.payload ? String(action.payload) : "something went wrong ! ";
+         
+      })
   },
 });
 

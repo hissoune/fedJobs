@@ -1,5 +1,5 @@
 import * as Device from 'expo-device';
-import { Platform, Pressable, StyleSheet } from 'react-native';
+import { Animated, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -7,6 +7,8 @@ import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { Link, useRouter } from 'expo-router';
 import { Image } from 'expo-image';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
 function getDevMenuHint() {
   if (Platform.OS === 'web') {
@@ -27,8 +29,25 @@ function getDevMenuHint() {
   );
 }
 
+
+
 export default function HomeScreen() {
   const router = useRouter();
+const {loading} = useSelector((state:RootState)=> state.auth )
+  if (loading) {
+    return (
+    <View style={styles.loadingContainer}>
+      <Animated.View style={styles.loader}>
+        <Text style={styles.loaderText}>F</Text>
+      </Animated.View>
+
+      <Text style={styles.loadingText}>
+        Loading...
+      </Text>
+    </View>
+  );
+    
+  }
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -117,4 +136,29 @@ const styles = StyleSheet.create({
     zIndex: -1,
     
   },
+   loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 12,
+  },
+
+  loader: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  loaderText: {
+    fontSize: 32,
+    fontWeight: 'bold',
+  },
+
+  loadingText: {
+    fontSize: 16,
+    fontWeight: '600',
+}
 });
+

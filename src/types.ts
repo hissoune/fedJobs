@@ -39,3 +39,14 @@ export type Job = {
   createdAt : Date
   updatedAt : Date
 };
+
+
+type ApplicationStatus = "PENDING" | "APPROVED" | "DECLINED";
+
+export type Application = {
+  message: string;
+  jobId: string;
+  status: ApplicationStatus;
+  createdAt: Date;
+  updatedAt: Date;
+};
