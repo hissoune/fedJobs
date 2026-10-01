@@ -340,7 +340,6 @@ export default function JobDetails() {
 
       <ApplyModal
         visible={applyVisible}
-        jobId={job.id}
         onClose={() => setApplyVisible(false)}
         onSubmit={(message)=>handleApply(message)}
         

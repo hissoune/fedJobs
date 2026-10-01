@@ -21,12 +21,31 @@ const initialState:InitialState = {
 }
 
 
-export const getApplcationsAction = createAsyncThunk(
+export const getApplicationsAction = createAsyncThunk(
     "applications/all",
-    async ()=>{
-        return await axiosInstance.get('applications').then((result)=> result.data);
+    async ({filters }: {  filters?: any })=>{
+         let url = `applications`;
+      if (filters && filters.status) {
+        console.log("Fetching applications with status:", filters.status);
+        url += `?status=${filters.status}`;
+      }
+        console.log("Fetching applications...");
+        return await axiosInstance.get(url).then((result)=> result.data);
     }
 )
+export const updateMessageAction = createAsyncThunk(
+    "applications/update",
+    async ({ id, message }: { id: string; message: string }, { rejectWithValue }) => {
+        try {
+            const result = await axiosInstance.patch(`applications/${id}`, { message });
+            return result.data;
+        } catch (error) {
+            return rejectWithValue("Failed to update message");
+        }
+    }
+)
+
+     
 
 
 
@@ -40,15 +59,33 @@ const applicationsSlice = createSlice({
     extraReducers:(builder)=>
         builder
 
-       .addCase(getApplcationsAction.pending,(state)=>{
+       .addCase(getApplicationsAction.pending,(state)=>{
         state.loading = true 
        })
-       .addCase(getApplcationsAction.fulfilled,(state,acttion)=>{
-        state.loading = true 
+       .addCase(getApplicationsAction.fulfilled,(state,acttion)=>{
+        
+        state.loading = false
+        state.error = "" 
         state.applications = acttion.payload
        })
-       .addCase(getApplcationsAction.rejected,(state)=>{
+       .addCase(getApplicationsAction.rejected,(state)=>{
+        state.loading = false
+        state.error = "Failed to fetch applications"
+       })
+       .addCase(updateMessageAction.pending,(state)=>{
         state.loading = true 
+       })
+       .addCase(updateMessageAction.fulfilled,(state,acttion)=>{
+        
+        state.loading = false
+        state.error = "" 
+        state.applications = state.applications.map((app: any) =>
+          app.id === acttion.payload.id ? acttion.payload : app
+        );
+       })
+       .addCase(updateMessageAction.rejected,(state)=>{
+        state.loading = false
+        state.error = "Failed to update message"
        })
  })
 

@@ -1,7 +1,6 @@
 import { Job } from "@/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axiosInstance from "../apiClient";
-import Toast from 'react-native-toast-message';
 
 interface InitialState {
   jobs: Job[];

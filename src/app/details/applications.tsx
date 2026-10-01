@@ -1,232 +1,92 @@
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { ThemedText } from "@/components/themed-text";
 import {
+  FlatList,
   Pressable,
   ScrollView,
   StyleSheet,
+  Text,
   View,
 } from "react-native";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
-import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
+import { useEffect, useState } from "react";
+import { getApplicationsAction } from "@/redux/slices/applicationsSlice";
+import { ApplicationItem } from "@/components/ApplicationItem";
+import { FlashList } from "@shopify/flash-list";
+import { FilterApplicationStatus } from "@/components/filtePriority";
+import ApplyModal from "@/components/applyModel";
 
-// const applications = [
-//   {
-//     id: "1",
-//     job: "AC Installation & Maintenance",
-//     location: "Safi",
-//     status: "PENDING",
-//     date: "Today",
-//   },
-//   {
-//     id: "2",
-//     job: "Electrical System Repair",
-//     location: "Safi",
-//     status: "APPROVED",
-//     date: "Sep 20",
-//   },
-//   {
-//     id: "3",
-//     job: "Solar Panel Maintenance",
-//     location: "Safi",
-//     status: "DECLINED",
-//     date: "Sep 18",
-//   },
-// ];
 
 type ApplicationStatus = "PENDING" | "APPROVED" | "DECLINED";
 
 export default function Applications() {
   const insets = useSafeAreaInsets();
-
+    const dispatch = useDispatch<AppDispatch>();
+  const [filters,setFilters] = useState<{status: ApplicationStatus}| null >(null)
   const {applications,loading} = useSelector((state:RootState)=> state.applications)
-  
+
   useEffect(()=>{
+    dispatch(getApplicationsAction({ filters }))
+  },[filters])
+ 
 
-  },[])
+ 
 
-  if(loading) return
+  const filter = (status: ApplicationStatus | null) => {
+    setFilters(status === null ? null : { status })
+  };
+
+  // if(loading) return
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={[
-        styles.content,
-        {
-          paddingTop: insets.top + 18,
-          paddingBottom: insets.bottom + 100,
-        },
-      ]}
-      showsVerticalScrollIndicator={false}
-    >
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f8fafc" }}>
+      <View
+        style={styles.container}
+       
+      >
       {/* Header */}
       <View style={styles.header}>
         <View>
-          <ThemedText style={styles.title}>
+          <Text style={styles.title}>
             Applications
-          </ThemedText>
+          </Text>
 
-          <ThemedText style={styles.subtitle}>
+          <Text style={styles.subtitle}>
             Track your job applications
-          </ThemedText>
+          </Text>
         </View>
 
         <View style={styles.countBadge}>
-          <ThemedText style={styles.countText}>
+          <Text style={styles.countText}>
             {applications.length}
-          </ThemedText>
+          </Text>
         </View>
       </View>
 
-      {/* Filters */}
-      <View style={styles.filters}>
-        <Pressable style={[styles.filter, styles.activeFilter]}>
-          <ThemedText style={styles.activeFilterText}>
-            All
-          </ThemedText>
-        </Pressable>
-
-        <Pressable style={styles.filter}>
-          <ThemedText style={styles.filterText}>
-            Pending
-          </ThemedText>
-        </Pressable>
-
-        <Pressable style={styles.filter}>
-          <ThemedText style={styles.filterText}>
-            Approved
-          </ThemedText>
-        </Pressable>
+        <FilterApplicationStatus filter={filter} />
+    
+    <FlashList
+      data={applications}
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => (
+        <ApplicationItem application={item} />
+      )}
+      contentContainerStyle={styles.list}
+    />
+   
       </View>
-
-      {/* Applications */}
-      {/* <View style={styles.list}>
-        {applications.map((application) => (
-          <ApplicationItem
-            key={application.id}
-            job={application.job}
-            location={application.location}
-            status={application.status as ApplicationStatus}
-            date={application.date}
-          />
-        ))}
-      </View> */}
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 
-function ApplicationItem({
-  job,
-  location,
-  status,
-  date,
-}: {
-  job: string;
-  location: string;
-  status: ApplicationStatus;
-  date: string;
-}) {
-  const statusStyle = getStatusStyle(status);
 
-  return (
-    <Pressable
-      style={({ pressed }) => [
-        styles.application,
-        pressed && styles.applicationPressed,
-      ]}
-    >
-      {/* Application header */}
-      <View style={styles.applicationHeader}>
-        <View style={styles.jobSection}>
-          <View style={styles.jobIcon}>
-            <ThemedText style={styles.jobIconText}>
-              F
-            </ThemedText>
-          </View>
 
-          <View style={styles.jobInfo}>
-            <ThemedText
-              style={styles.jobTitle}
-              numberOfLines={1}
-            >
-              {job}
-            </ThemedText>
-
-            <ThemedText style={styles.location}>
-              {location}
-            </ThemedText>
-          </View>
-        </View>
-
-        <View
-          style={[
-            styles.statusBadge,
-            statusStyle.background,
-          ]}
-        >
-          <View
-            style={[
-              styles.statusDot,
-              statusStyle.dot,
-            ]}
-          />
-
-          <ThemedText style={styles.statusText}>
-            {status}
-          </ThemedText>
-        </View>
-      </View>
-
-      {/* Application metadata */}
-      <View style={styles.applicationFooter}>
-        <View>
-          <ThemedText style={styles.metaLabel}>
-            Applied
-          </ThemedText>
-
-          <ThemedText style={styles.metaValue}>
-            {date}
-          </ThemedText>
-        </View>
-
-        <View style={styles.viewApplication}>
-          <ThemedText style={styles.viewText}>
-            View application
-          </ThemedText>
-
-          <ThemedText style={styles.arrow}>
-            →
-          </ThemedText>
-        </View>
-      </View>
-    </Pressable>
-  );
-}
-
-function getStatusStyle(status: ApplicationStatus) {
-  switch (status) {
-    case "APPROVED":
-      return {
-        background: styles.approvedBackground,
-        dot: styles.approvedDot,
-      };
-
-    case "DECLINED":
-      return {
-        background: styles.declinedBackground,
-        dot: styles.declinedDot,
-      };
-
-    default:
-      return {
-        background: styles.pendingBackground,
-        dot: styles.pendingDot,
-      };
-  }
-}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 20,
+    backgroundColor: "#f8fafc",
   },
 
   content: {
@@ -366,49 +226,7 @@ const styles = StyleSheet.create({
 
   // Status
 
-  statusBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 9,
-    paddingVertical: 6,
-    borderRadius: 10,
-  },
-
-  statusDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    marginRight: 6,
-  },
-
-  statusText: {
-    fontSize: 10,
-    fontWeight: "800",
-  },
-
-  pendingBackground: {
-    backgroundColor: "#fff7ed",
-  },
-
-  pendingDot: {
-    backgroundColor: "#f97316",
-  },
-
-  approvedBackground: {
-    backgroundColor: "#f0fdf4",
-  },
-
-  approvedDot: {
-    backgroundColor: "#22c55e",
-  },
-
-  declinedBackground: {
-    backgroundColor: "#fef2f2",
-  },
-
-  declinedDot: {
-    backgroundColor: "#ef4444",
-  },
+  
 
   // Footer
 

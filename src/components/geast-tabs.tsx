@@ -47,7 +47,7 @@ export default function GeastTabs() {
       <Stack.Screen name="(auth)/register" />
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="details/jobDetails" options={{headerShown: true, title: "Job Details"}} />
-      <Stack.Screen name="details/applications" options={{headerShown: true, title: "Job Details"}} />
+      <Stack.Screen name="details/applications" options={{headerShown: true, title: "My Applications"}} />
     </Stack>
   );
 

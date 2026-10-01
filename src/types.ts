@@ -41,9 +41,10 @@ export type Job = {
 };
 
 
-type ApplicationStatus = "PENDING" | "APPROVED" | "DECLINED";
+export type ApplicationStatus = "PENDING" | "APPROVED" | "DECLINED";
 
 export type Application = {
+  id:string
   message: string;
   jobId: string;
   status: ApplicationStatus;

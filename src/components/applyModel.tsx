@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Modal,
   View,
@@ -11,25 +11,34 @@ import {
 
 type ApplyModalProps = {
   visible: boolean;
-  jobId: string;
+  message?: string;
   onClose: () => void;
   onSubmit: (message: string) => void;
 };
 
 export default function ApplyModal({
   visible,
-  jobId,
   onClose,
   onSubmit,
+  message: initialMessage
 }: ApplyModalProps) {
+  
+  console.log('Initial message:', initialMessage);
   const [message, setMessage] = useState('');
-
   const handleSubmit = () => {
     if (!message.trim()) return;
 
     onSubmit(message.trim());
     setMessage('');
   };
+
+  useEffect(() => {
+    if(!initialMessage) return;
+
+    setMessage(initialMessage || '');
+  }, [initialMessage,visible]);
+
+   console.log(' message:', message);
 
   return (
     <Modal
@@ -40,7 +49,7 @@ export default function ApplyModal({
     >
       <View style={styles.overlay}>
         <View style={styles.modal}>
-          <Text style={styles.title}>Apply for this job</Text>
+          <Text style={styles.title}>{initialMessage ? 'Update Your Message' : 'Apply for this job'}</Text>
 
           <Text style={styles.description}>
             Tell the customer why you are a good fit for this job.
@@ -72,7 +81,7 @@ export default function ApplyModal({
               onPress={handleSubmit}
               disabled={!message.trim()}
             >
-              <Text style={styles.submitText}>Apply</Text>
+              <Text style={styles.submitText}>{initialMessage ? 'Update' : 'Apply'}</Text>
             </TouchableOpacity>
           </View>
         </View>
