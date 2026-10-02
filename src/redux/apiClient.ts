@@ -61,7 +61,6 @@ axiosInstance.interceptors.response.use(
       originalRequest._retry = true;
 
       if (isRefreshing) {
-        console.log("okay u r here ");
         
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -74,7 +73,6 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       const refreshToken = await getRefreshToken();
-      console.log("fhfjhfjhfjhfj",refreshToken);
       
       if (!refreshToken) {
         await clearAuthToken();
