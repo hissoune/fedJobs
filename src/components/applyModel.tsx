@@ -22,9 +22,7 @@ export default function ApplyModal({
   onSubmit,
   message: initialMessage
 }: ApplyModalProps) {
-  
-  console.log('Initial message:', initialMessage);
-  const [message, setMessage] = useState('');
+    const [message, setMessage] = useState('');
   const handleSubmit = () => {
     if (!message.trim()) return;
 
@@ -37,8 +35,6 @@ export default function ApplyModal({
 
     setMessage(initialMessage || '');
   }, [initialMessage,visible]);
-
-   console.log(' message:', message);
 
   return (
     <Modal

@@ -26,10 +26,8 @@ export const getApplicationsAction = createAsyncThunk(
     async ({filters }: {  filters?: any })=>{
          let url = `applications`;
       if (filters && filters.status) {
-        console.log("Fetching applications with status:", filters.status);
         url += `?status=${filters.status}`;
       }
-        console.log("Fetching applications...");
         return await axiosInstance.get(url).then((result)=> result.data);
     }
 )
@@ -40,9 +38,11 @@ export const updateMessageAction = createAsyncThunk(
             const result = await axiosInstance.patch(`applications/${id}`, { message });
             return result.data;
         } catch (error) {
-            return rejectWithValue("Failed to update message");
+            const response = (error as { response?: { data?: { message?: string }; message?: string } })?.response;
+            return rejectWithValue(response?.data?.message || response?.message || "Failed to update message");
         }
-    }
+        }
+    
 )
 
      

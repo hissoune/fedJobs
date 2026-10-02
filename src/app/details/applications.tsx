@@ -1,9 +1,5 @@
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { ThemedText } from "@/components/themed-text";
 import {
-  FlatList,
-  Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -15,16 +11,14 @@ import { getApplicationsAction } from "@/redux/slices/applicationsSlice";
 import { ApplicationItem } from "@/components/ApplicationItem";
 import { FlashList } from "@shopify/flash-list";
 import { FilterApplicationStatus } from "@/components/filtePriority";
-import ApplyModal from "@/components/applyModel";
 
 
 type ApplicationStatus = "PENDING" | "APPROVED" | "DECLINED";
 
 export default function Applications() {
-  const insets = useSafeAreaInsets();
-    const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useDispatch<AppDispatch>();
   const [filters,setFilters] = useState<{status: ApplicationStatus}| null >(null)
-  const {applications,loading} = useSelector((state:RootState)=> state.applications)
+  const {applications} = useSelector((state:RootState)=> state.applications)
 
   useEffect(()=>{
     dispatch(getApplicationsAction({ filters }))
@@ -36,8 +30,6 @@ export default function Applications() {
   const filter = (status: ApplicationStatus | null) => {
     setFilters(status === null ? null : { status })
   };
-
-  // if(loading) return
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f8fafc" }}>
       <View

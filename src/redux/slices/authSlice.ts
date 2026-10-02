@@ -27,10 +27,7 @@ import { clearAuthToken, clearRefreshToken, saveAuthToken, saveRefreshToken } fr
 export const loginAction = createAsyncThunk(
   "auth/loginUser",
   async (credentials: { email: string; password: string }): Promise<{ userWithUrl:any, token: string; refreshToken: string }> => {
-    const tokens = await axiosInstance.post("/auth/login", credentials).then((response) => response.data);
-    console.log('ddddddd',tokens);
-    console.log("tttttttttttttttt",tokens.refreshToken);
-    
+    const tokens = await axiosInstance.post("/auth/login", credentials).then((response) => response.data);    
     await AsyncStorage.setItem("token", tokens.token);
     await saveRefreshToken(tokens.refreshToken)
     return tokens;
@@ -81,9 +78,7 @@ export const registerAction = createAsyncThunk(
 export const update = createAsyncThunk(
   "auth/update",
   async (userData: FormData ): Promise<User> => {
-      const user = await axiosInstance.patch("/auth/update", userData).then((response) => response.data);
-      console.log("gfgfgfgfgf",user);
-      
+      const user = await axiosInstance.patch("/auth/update", userData).then((response) => response.data);      
       return user;
   }
 );

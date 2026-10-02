@@ -68,7 +68,7 @@ export default function JobDetails() {
   } catch (error) {
     console.log('APPLY ERROR:', error);
      
-      showErrorMessage(err)
+      showErrorMessage(error as string || 'An error occurred while applying for the job.');
 
   } finally {
     setApplyVisible(false);

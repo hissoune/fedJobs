@@ -6,7 +6,7 @@ export const showSuccessMessage = (message:string)=>{
     return showMessage({
         message,
         type: "success",
-        backgroundColor: "#16A34A",
+        backgroundColor: "#06923E",
         color: "#FFFFFF",
         duration: 3000,
     });
@@ -15,7 +15,7 @@ export const showErrorMessage = (message:string)=>{
     return showMessage({
         message,
         type: "danger",
-        backgroundColor: "#BC0202",
+        backgroundColor: "#FF0000",
         color: "#FFFFFF",
         duration: 3000,
     });

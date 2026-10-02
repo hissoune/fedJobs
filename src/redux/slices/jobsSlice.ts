@@ -25,8 +25,6 @@ const initialState: InitialState = {
 export const getJobsAction = createAsyncThunk(
   "jobs/getAll",
   async ({ page, filters }: { page: number; filters: any }, { rejectWithValue }) => {
-    console.log("pppppppppp", filters);
-
     try {
       let url = `jobs?page=${page}`;
       if (filters && filters.priority) {
@@ -36,7 +34,6 @@ export const getJobsAction = createAsyncThunk(
 
       return result.data;
     } catch (error) {
-      console.log("can't get jobs", error);
       return rejectWithValue("Failed getting jobs");
     }
   }

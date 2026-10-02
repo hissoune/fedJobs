@@ -10,20 +10,15 @@ import { showErrorMessage, showSuccessMessage } from "./flashMessages";
 export const ApplicationItem = ({ application }: { application: any }) => {
     const [applyVisible, setApplyVisible] = useState(false);
     const statusStyle = getStatusStyle(application.status); 
-    const {error, loading} = useSelector((state:RootState)=> state.applications)
+    const { loading} = useSelector((state:RootState)=> state.applications)
       const dispatch = useDispatch<AppDispatch>();
 
-    const handleUpadate = (message:string) => {
-
-        try{
-            console.log("Update message:", message);
-            dispatch(updateMessageAction({ id: application.id, message }));
+    const handleUpadate = async (message:string) => {
+        try{ 
+            await dispatch(updateMessageAction({ id: application.id, message })).unwrap();
             showSuccessMessage('Operation completed successfully!')
-            
-          
-        }catch(err){
-            console.log(err)
-            showErrorMessage(error)
+        }catch(error){
+            showErrorMessage(error as string || 'An error occurred while updating the message.');
         }finally{
               setApplyVisible(false);
         }

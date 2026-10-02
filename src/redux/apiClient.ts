@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { clearAuthToken, clearRefreshToken, getAuthToken, getRefreshToken, saveAuthToken, saveRefreshToken } from "../helpers/storage";
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
 
@@ -57,13 +56,8 @@ axiosInstance.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
     const status = error.response?.status;
-      console.log("ax err ",status);
-      console.log("ax err ",error);
-      console.log("ax err ",originalRequest._retry);
       
-    if (status === 401 && !originalRequest._retry) {
-      console.log("u r here ifffffff");
-      
+    if (status === 401 && !originalRequest._retry) {      
       originalRequest._retry = true;
 
       if (isRefreshing) {
@@ -89,16 +83,10 @@ axiosInstance.interceptors.response.use(
       }
 
       try {
-  console.log('🔥 BEFORE REFRESH REQUEST');
-
   const response = await axios.post(
     `${baseURL}/auth/refresh`,
     { refreshToken }
   );
-
-  console.log('🔥 AFTER REFRESH REQUEST');
-  console.log('🔥 STATUS:', response.status);
-  console.log('🔥 DATA:', response.data);
 
  await saveAuthToken(response.data.accessToken)
  await saveRefreshToken(response.data.refreshToken)
@@ -109,15 +97,9 @@ axiosInstance.interceptors.response.use(
 
 return axiosInstance(originalRequest);
 } catch (err) {
-  console.log('🔥🔥 REFRESH FAILED:', err);
-  console.log('🔥🔥 RESPONSE:', (err as AxiosError).response?.data);
-  console.log('🔥🔥 STATUS:', (err as AxiosError).response?.status);
-
   processQueue(err, null);
-
   await clearAuthToken();
   await clearRefreshToken();
-
   return Promise.reject(err);
 }
     }
